@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 پیکسل پلاس | فروش بازی PS4</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --accent: #e94560;
+            --accent-hover: #ff5a7a;
+            --gold: #f5c518;
+            --text: #eaeaea;
+            --card-glass: rgba(255, 255, 255, 0.05);
+            --border-glass: rgba(255, 255, 255, 0.1);
+        }
+        body {
+            background: radial-gradient(circle at top, #1a1a2e 0%, #0f0f1a 80%);
+            font-family: 'Vazir', 'Tahoma', sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+            margin: 0;
+            padding-bottom: 30px;
+        }
+        .main-container {
+            max-width: 1300px;
+            margin: 20px auto;
+            background: rgba(15, 15, 26, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            overflow: hidden;
+        }
+        .nav-tabs {
+            border-bottom: 1px solid var(--border-glass);
+            background: rgba(255,255,255,0.03);
+            padding: 0 15px;
+        }
+        .nav-tabs .nav-link {
+            color: #aaa;
+            border: none;
+            padding: 15px 25px;
+            font-weight: bold;
+            border-radius: 16px 16px 0 0;
+            margin: 5px 3px 0 3px;
+        }
+        .nav-tabs .nav-link.active {
+            background: var(--accent);
+            color: white !important;
+            box-shadow: 0 5px 15px rgba(233,69,96,0.4);
+        }
+        .game-card {
+            background: var(--card-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.3s;
+        }
+        .game-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px rgba(233,69,96,0.25);
+            border-color: var(--accent);
+        }
+        .game-card.selected {
+            background: rgba(233,69,96,0.2);
+            border-color: var(--accent);
+        }
+        .game-card .emoji-placeholder {
+            width: 65px; height: 65px; border-radius: 14px;
+            background: rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem;
+        }
+        .price-tag { color: var(--gold); font-weight: bold; }
+        .btn { border-radius: 12px; padding: 10px 20px; font-weight: bold; }
+        .btn-primary { background: var(--accent); border: none; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .search-box, .form-control {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid var(--border-glass);
+            color: white;
+            border-radius: 12px;
+            padding: 10px 15px;
+        }
+        .invoice-panel {
+            background: rgba(0,0,0,0.35);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid var(--border-glass);
+        }
+        .admin-section {
+            background: var(--card-glass);
+            border-radius: 18px;
+            padding: 20px;
+            border: 1px solid var(--border-glass);
+            margin-bottom: 25px;
+        }
+        .modal-content {
+            background: rgba(20,20,40,0.95);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--border-glass);
+        }
+        @media print {
+            @page { size: A3 landscape; margin: 15mm; }
+            body { background: white; color: black; }
+        }
+    </style>
+</head>
+<body>
+<div class="main-container container-fluid">
+    <ul class="nav nav-tabs justify-content-center" id="mainTabs">
+        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#customerPanel"><i class="fas fa-user me-2"></i> فروش به مشتری</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#adminPanel"><i class="fas fa-cogs me-2"></i> مدیریت</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- ===== پنل مشتری ===== -->
+        <div class="tab-pane fade show active" id="customerPanel">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+                        <h4 class="text-warning"><i class="fas fa-gamepad me-2"></i>بازی‌های موجود</h4>
+                        <div class="d-flex gap-2">
+                            <input type="text" id="searchGames" class="search-box" placeholder="🔍 جستجو..." oninput="renderGames()" style="width:200px;">
+                            <select id="sortGames" class="form-select search-box" style="width:150px;" onchange="renderGames()">
+                                <option value="default">پیش‌فرض</option>
+                                <option value="price-asc">قیمت: کم به زیاد</option>
+                                <option value="price-desc">قیمت: زیاد به کم</option>
+                                <option value="name">نام</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="gamesContainer" class="row"></div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="cart-float">
+                        <div class="invoice-panel mb-3">
+                            <h5 class="text-info"><i class="fas fa-shopping-cart me-2"></i>سبد خرید</h5>
+                            <div id="cartItems" class="mb-2" style="max-height:200px; overflow-y:auto;">بازی انتخاب نشده</div>
+                            <div class="input-group input-group-sm mb-2">
+                                <input type="text" id="discountCode" class="form-control" placeholder="کد تخفیف">
+                                <button class="btn btn-outline-warning" onclick="applyDiscount()">اعمال</button>
+                            </div>
+                            <div class="d-flex justify-content-between"><span>جمع اولیه:</span><span id="subTotal">0</span> تومان</div>
+                            <div class="d-flex justify-content-between text-success"><span>تخفیف:</span><span id="discountAmount">0</span> تومان</div>
+                            <hr class="border-secondary">
+                            <div class="d-flex justify-content-between fw-bold"><span>قابل پرداخت:</span><span id="finalTotal" class="text-warning">0</span> تومان</div>
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-6"><input type="text" id="custFirstName" class="form-control" placeholder="نام"></div>
+                            <div class="col-6"><input type="text" id="custLastName" class="form-control" placeholder="نام خانوادگی"></div>
+                            <div class="col-12"><input type="text" id="custPhone" class="form-control" placeholder="شماره تلفن"></div>
+                        </div>
+                        <button class="btn btn-success w-100 mb-2" onclick="generateInvoice()"><i class="fas fa-receipt me-2"></i>صدور فاکتور</button>
+                        <button class="btn btn-outline-info w-100 mb-2" onclick="showCustomerHistory()"><i class="fas fa-history me-2"></i>تاریخچه خرید</button>
+                    </div>
+                </div>
+            </div>
+            <div id="invoiceResult" class="invoice-panel mt-4" style="display:none;"></div>
+            <div id="customerHistoryPanel" class="invoice-panel mt-4" style="display:none;"></div>
+        </div>
+
+        <!-- ===== پنل مدیریت ===== -->
+        <div class="tab-pane fade" id="adminPanel">
+            <div id="adminLoginBox" class="text-center" style="max-width:350px; margin: 50px auto;">
+                <h4 class="text-warning mb-3"><i class="fas fa-lock me-2"></i>ورود به مدیریت</h4>
+                <input type="text" id="adminUsername" class="form-control mb-2" placeholder="نام کاربری">
+                <input type="password" id="adminPassword" class="form-control mb-2" placeholder="رمز عبور">
+                <button class="btn btn-primary w-100" onclick="adminLogin()">ورود</button>
+                <div id="loginError" class="text-danger mt-2"></div>
+            </div>
+            <div id="adminDashboard" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="text-warning mb-0"><i class="fas fa-tachometer-alt me-2"></i>داشبورد</h4>
+                    <div>
+                        <button class="btn btn-outline-light btn-sm me-2" onclick="showChangePassword()"><i class="fas fa-key"></i> تغییر رمز</button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> خروج</button>
+                    </div>
+                </div>
+
+                <!-- بازی‌ها -->
+                <div class="admin-section">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="text-info"><i class="fas fa-gamepad me-2"></i>بازی‌ها</h5>
+                        <div>
+                            <button class="btn btn-success me-2" onclick="showAddModal()"><i class="fas fa-plus"></i> افزودن</button>
+                            <button class="btn btn-outline-danger" id="bulkDeleteBtn" disabled onclick="bulkDeleteGames()"><i class="fas fa-trash"></i> حذف انتخاب‌شده</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead><tr><th><input type="checkbox" id="selectAllGames" onchange="toggleSelectAll(this)"></th><th>نام</th><th>قیمت</th><th>عملیات</th></tr></thead>
+                            <tbody id="adminGamesTable"></tbody>
+                        </table>
+                    </div>
+                    <div class="text-end mt-2">
+                        <button class="btn btn-outline-info btn-sm" onclick="exportGamesJSON()">خروجی JSON</button>
+                        <label class="btn btn-outline-warning btn-sm"><i class="fas fa-upload"></i> وارد کردن JSON
+                            <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importGamesJSON(event)">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- فاکتورها -->
+                <div class="admin-section">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="text-info"><i class="fas fa-file-invoice me-2"></i>فاکتورها</h5>
+                        <div>
+                            <button class="btn btn-outline-success btn-sm" onclick="exportInvoicesExcel()">Excel</button>
+                            <button class="btn btn-outline-light btn-sm me-2" onclick="printAllInvoices()">چاپ همه</button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="deleteAllInvoices()">حذف همه</button>
+                        </div>
+                    </div>
+                    <span class="text-success">مجموع فروش: <strong id="totalRevenue">0</strong> تومان</span>
+                    <div class="table-responsive mt-2">
+                        <table class="table table-dark table-hover">
+                            <thead><tr><th>کد پیگیری</th><th>مشتری</th><th>مبلغ</th><th>عملیات</th></tr></thead>
+                            <tbody id="invoicesTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- کدهای تخفیف -->
+                <div class="admin-section">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="text-info"><i class="fas fa-tags me-2"></i>کدهای تخفیف</h5>
+                        <button class="btn btn-primary" onclick="showDiscountModal(null)"><i class="fas fa-plus"></i> کد جدید</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead><tr><th>کد</th><th>درصد</th><th>محدودیت</th><th>استفاده</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+                            <tbody id="discountsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- مدیران -->
+                <div class="admin-section">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="text-info"><i class="fas fa-user-shield me-2"></i>مدیران</h5>
+                        <button class="btn btn-primary" onclick="showAdminModal(null)"><i class="fas fa-user-plus"></i> افزودن مدیر</button>
+                    </div>
+                    <table class="table table-dark table-hover">
+                        <thead><tr><th>نام کاربری</th><th>عملیات</th></tr></thead>
+                        <tbody id="adminsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال‌ها -->
+<div id="gameModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 id="modalTitle">بازی</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="editGameId"><input type="text" id="gameName" class="form-control mb-2" placeholder="نام بازی"><input type="number" id="gamePrice" class="form-control mb-2" placeholder="قیمت (تومان)"><input type="text" id="gameImage" class="form-control" placeholder="آدرس عکس (اختیاری)"></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button><button class="btn btn-primary" onclick="saveGame()">ذخیره</button></div></div></div>
+</div>
+<div id="discountModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 id="discountModalTitle">کد تخفیف</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="editDiscountId"><input type="text" id="discountCodeInput" class="form-control mb-2" placeholder="کد تخفیف"><input type="number" id="discountPercent" class="form-control mb-2" placeholder="درصد تخفیف"><input type="number" id="discountMaxUses" class="form-control mb-2" placeholder="حداکثر استفاده (خالی = نامحدود)"></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button><button class="btn btn-primary" onclick="saveDiscount()">ذخیره</button></div></div></div>
+</div>
+<div id="editInvoiceModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5>ویرایش فاکتور</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="editInvoiceId"><div class="row mb-3"><div class="col-md-6"><label>نام</label><input type="text" id="editInvFirstName" class="form-control"></div><div class="col-md-6"><label>نام خانوادگی</label><input type="text" id="editInvLastName" class="form-control"></div></div><div class="mb-3"><label>شماره تلفن</label><input type="text" id="editInvPhone" class="form-control"></div><label>بازی‌ها:</label><div id="editGamesList" class="border rounded p-2" style="max-height:250px; overflow-y:auto;"></div><div class="mt-2">مبلغ کل: <span id="editTotalPrice">0</span> تومان</div></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button><button class="btn btn-success" onclick="saveInvoiceEdit()">ذخیره</button></div></div></div>
+</div>
+<div id="adminModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 id="adminModalTitle">مدیر</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="editAdminUsername"><input type="text" id="adminUsernameInput" class="form-control mb-2" placeholder="نام کاربری"><input type="password" id="adminPasswordInput" class="form-control mb-2" placeholder="رمز عبور"></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button><button class="btn btn-primary" onclick="saveAdmin()">ذخیره</button></div></div></div>
+</div>
+
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ==================== داده‌ها ====================
+const STORAGE_GAMES = "pixelplus_games";
+const STORAGE_INVOICES = "pixelplus_invoices";
+const STORAGE_DISCOUNTS = "pixelplus_discounts";
+const STORAGE_ADMINS = "pixelplus_admins";
+
+let games = JSON.parse(localStorage.getItem(STORAGE_GAMES)) || [];
+let invoices = JSON.parse(localStorage.getItem(STORAGE_INVOICES)) || [];
+let discounts = JSON.parse(localStorage.getItem(STORAGE_DISCOUNTS)) || [];
+let admins = JSON.parse(localStorage.getItem(STORAGE_ADMINS)) || [];
+
+// مقداردهی اولیه
+if (admins.length === 0) admins = [{ username: "admin", password: "admin" }];
+saveAdmins();
+if (discounts.length === 0) {
+    discounts = [{ id: Date.now(), code: "PIXEL10", percent: 10, maxUses: -1, currentUses: 0, active: true }];
+    saveDiscounts();
+}
+if (games.length === 0) {
+    games = [
+        {id:1, name:"The Last of Us Part II", price:1450000, image:""},
+        {id:2, name:"God of War", price:1200000, image:""},
+        {id:3, name:"Red Dead Redemption 2", price:1700000, image:""},
+        {id:4, name:"Marvel's Spider-Man", price:1000000, image:""},
+        {id:5, name:"Horizon Zero Dawn", price:950000, image:""},
+        {id:6, name:"Uncharted 4", price:850000, image:""},
+        {id:7, name:"Ghost of Tsushima", price:1300000, image:""},
+        {id:8, name:"Bloodborne", price:700000, image:""},
+        {id:9, name:"Death Stranding", price:1100000, image:""},
+        {id:10, name:"Final Fantasy VII Remake", price:1400000, image:""},
+        {id:11, name:"Resident Evil 2 Remake", price:800000, image:""},
+        {id:12, name:"Sekiro: Shadows Die Twice", price:950000, image:""},
+        {id:13, name:"FIFA 23", price:900000, image:""},
+        {id:14, name:"Call of Duty: Modern Warfare", price:1100000, image:""},
+        {id:15, name:"Mortal Kombat 11", price:650000, image:""},
+        {id:16, name:"Crash Bandicoot 4", price:600000, image:""},
+        {id:17, name:"Days Gone", price:750000, image:""},
+        {id:18, name:"Persona 5 Royal", price:1200000, image:""},
+        {id:19, name:"Nioh 2", price:850000, image:""},
+        {id:20, name:"Doom Eternal", price:900000, image:""},
+        {id:21, name:"The Witcher 3", price:950000, image:""},
+        {id:22, name:"Dark Souls III", price:800000, image:""},
+        {id:23, name:"Grand Theft Auto V", price:1200000, image:""},
+        {id:24, name:"Far Cry 6", price:1100000, image:""},
+        {id:25, name:"Assassin's Creed Valhalla", price:1300000, image:""},
+        {id:26, name:"Cyberpunk 2077", price:1400000, image:""},
+        {id:27, name:"Elden Ring", price:1600000, image:""},
+        {id:28, name:"Hogwarts Legacy", price:1500000, image:""},
+        {id:29, name:"Resident Evil 4 Remake", price:1400000, image:""},
+        {id:30, name:"Final Fantasy XVI", price:1600000, image:""}
+    ];
+    saveGames();
+}
+
+function saveGames() { localStorage.setItem(STORAGE_GAMES, JSON.stringify(games)); }
+function saveInvoices() { localStorage.setItem(STORAGE_INVOICES, JSON.stringify(invoices)); }
+function saveDiscounts() { localStorage.setItem(STORAGE_DISCOUNTS, JSON.stringify(discounts)); }
+function saveAdmins() { localStorage.setItem(STORAGE_ADMINS, JSON.stringify(admins)); }
+
+// ================= پنل مشتری =================
+let selectedGames = new Set();
+let activeDiscount = null;
+
+function getFilteredAndSortedGames() {
+    let filtered = [...games];
+    const search = document.getElementById('searchGames')?.value.trim().toLowerCase() || '';
+    if (search) filtered = filtered.filter(g => g.name.toLowerCase().includes(search));
+    const sort = document.getElementById('sortGames')?.value || 'default';
+    if (sort === 'price-asc') filtered.sort((a,b) => a.price - b.price);
+    else if (sort === 'price-desc') filtered.sort((a,b) => b.price - a.price);
+    else if (sort === 'name') filtered.sort((a,b) => a.name.localeCompare(b.name, 'fa'));
+    return filtered;
+}
+
+function renderGames() {
+    const container = document.getElementById("gamesContainer");
+    if (!container) return;
+    const list = getFilteredAndSortedGames();
+    container.innerHTML = "";
+    list.forEach(game => {
+        const isSelected = selectedGames.has(game.id);
+        const col = document.createElement("div");
+        col.className = "col-md-6 col-xl-4";
+        col.innerHTML = `
+            <div class="game-card ${isSelected ? 'selected' : ''}" onclick="toggleGame(${game.id})">
+                <div class="emoji-placeholder">🎮</div>
+                <div class="flex-grow-1"><strong>${game.name}</strong><br><span class="price-tag">${game.price.toLocaleString()} تومان</span></div>
+                <i class="fas ${isSelected ? 'fa-check-circle text-success' : 'fa-circle text-muted'} fa-2x"></i>
+            </div>`;
+        container.appendChild(col);
+    });
+    updateCart();
+}
+
+function toggleGame(gameId) {
+    if (selectedGames.has(gameId)) selectedGames.delete(gameId);
+    else selectedGames.add(gameId);
+    renderGames();
+}
+
+function updateCart() {
+    const cartDiv = document.getElementById("cartItems");
+    let total = 0, html = '';
+    selectedGames.forEach(id => {
+        const game = games.find(g => g.id === id);
+        if (game) {
+            total += game.price;
+            html += `<div class="d-flex justify-content-between border-bottom py-1">
+                <span>${game.name}</span>
+                <span>${game.price.toLocaleString()} <i class="fas fa-times text-danger ms-2" style="cursor:pointer" onclick="event.stopPropagation(); removeFromCart(${game.id})"></i></span>
+            </div>`;
+        }
+    });
+    cartDiv.innerHTML = html || '<p class="text-muted">بازی انتخاب نشده</p>';
+    document.getElementById("subTotal").innerText = total.toLocaleString();
+    let discountAmount = 0;
+    if (activeDiscount) discountAmount = Math.round(total * activeDiscount.percent / 100);
+    document.getElementById("discountAmount").innerText = discountAmount.toLocaleString();
+    document.getElementById("finalTotal").innerText = (total - discountAmount).toLocaleString();
+}
+
+function removeFromCart(gameId) { selectedGames.delete(gameId); renderGames(); }
+
+function applyDiscount() {
+    const code = document.getElementById("discountCode").value.trim().toUpperCase();
+    const discountObj = discounts.find(d => d.code.toUpperCase() === code && d.active);
+    if (!discountObj) { activeDiscount = null; alert("❌ کد تخفیف نامعتبر"); updateCart(); return; }
+    if (discountObj.maxUses !== -1 && discountObj.currentUses >= discountObj.maxUses) {
+        activeDiscount = null; alert("❌ ظرفیت کد تمام شده"); updateCart(); return;
+    }
+    activeDiscount = { code: discountObj.code, percent: discountObj.percent, id: discountObj.id };
+    alert(`✅ تخفیف ${discountObj.percent}% اعمال شد`);
+    updateCart();
+}
+
+function generateInvoice() {
+    const firstName = document.getElementById("custFirstName").value.trim();
+    const lastName = document.getElementById("custLastName").value.trim();
+    const phone = document.getElementById("custPhone").value.trim();
+    if (!firstName || !lastName || !phone) return alert("اطلاعات مشتری کامل نیست");
+    if (selectedGames.size === 0) return alert("بازی انتخاب کنید");
+
+    const selectedList = Array.from(selectedGames).map(id => {
+        let g = games.find(x => x.id === id);
+        return { id: g.id, name: g.name, price: g.price };
+    });
+    const subTotal = selectedList.reduce((s,g) => s+g.price, 0);
+    let discountPercent = 0, discountAmount = 0, discountCode = null;
+    if (activeDiscount) {
+        discountPercent = activeDiscount.percent;
+        discountAmount = Math.round(subTotal * discountPercent / 100);
+        discountCode = activeDiscount.code;
+        const disc = discounts.find(d => d.id === activeDiscount.id);
+        if (disc) { disc.currentUses++; saveDiscounts(); }
+    }
+    const total = subTotal - discountAmount;
+    const invoice = {
+        id: Date.now(),
+        trackingCode: Math.floor(100000 + Math.random() * 900000),
+        date: new Date().toLocaleString("fa-IR"),
+        customer: { firstName, lastName, phone },
+        games: selectedList,
+        subTotal, discountPercent, discountAmount, total, discountCode
+    };
+    invoices.push(invoice);
+    saveInvoices();
+
+    document.getElementById("invoiceResult").innerHTML = `
+        <div class="text-center text-warning fw-bold"><i class="fas fa-heart"></i> با تشکر از شما - کد پیگیری: ${invoice.trackingCode}</div>
+        <button class="btn btn-outline-primary btn-sm mt-2" onclick="printInvoice('${invoice.id}')"><i class="fas fa-print"></i> چاپ فاکتور</button>
+    `;
+    document.getElementById("invoiceResult").style.display = "block";
+
+    activeDiscount = null;
+    selectedGames.clear();
+    document.getElementById("discountCode").value = "";
+    ["custFirstName","custLastName","custPhone"].forEach(id => document.getElementById(id).value = "");
+    renderGames();
+    alert(`فاکتور صادر شد - کد پیگیری: ${invoice.trackingCode}`);
+}
+
+function printInvoice(invoiceId) {
+    const inv = invoices.find(i => i.id == invoiceId);
+    if (!inv) return;
+    const w = window.open('', '_blank');
+    w.document.write(`<html dir="rtl"><head><title>چاپ فاکتور</title>
+        <style>
+            body { font-family: Tahoma; background: white; color: black; padding: 20px; }
+            @page { size: A3 landscape; margin: 20mm; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+        </style></head><body>
+        <h3>فاکتور فروش - پیکسل پلاس</h3>
+        <p>کد پیگیری: ${inv.trackingCode} | تاریخ: ${inv.date}</p>
+        <p>مشتری: ${inv.customer.firstName} ${inv.customer.lastName} | تلفن: ${inv.customer.phone}</p>
+        <table><tr><th>بازی</th><th>قیمت</th></tr>
+        ${inv.games.map(g => `<tr><td>${g.name}</td><td>${g.price.toLocaleString()}</td></tr>`).join('')}
+        </table>
+        <p>جمع اولیه: ${inv.subTotal.toLocaleString()} | تخفیف: ${inv.discountAmount.toLocaleString()}</p>
+        <h3>مبلغ نهایی: ${inv.total.toLocaleString()} تومان</h3>
+        <p style="text-align:center;">با تشکر از خرید شما</p>
+        </body></html>`);
+    w.document.close();
+    w.focus();
+    w.print();
+    setTimeout(() => w.close(), 1000);
+}
+
+function showCustomerHistory() {
+    const phone = document.getElementById("custPhone").value.trim();
+    const panel = document.getElementById("customerHistoryPanel");
+    if (!phone) return panel.innerHTML = '<div class="alert alert-warning">شماره تلفن را وارد کنید</div>';
+    const records = invoices.filter(inv => inv.customer.phone === phone);
+    if (!records.length) return panel.innerHTML = '<div class="alert alert-info">فاکتوری یافت نشد</div>';
+    let html = '<h5 class="text-info">تاریخچه خریدها</h5>';
+    records.reverse().forEach(inv => {
+        html += `<div class="card bg-dark border-secondary mb-2"><div class="card-body">
+            <strong>کد پیگیری:</strong> ${inv.trackingCode} | <strong>تاریخ:</strong> ${inv.date}<br>
+            <strong>مبلغ:</strong> ${inv.total.toLocaleString()} تومان
+        </div></div>`;
+    });
+    panel.innerHTML = html;
+    panel.style.display = "block";
+}
+
+// ================= پنل مدیریت =================
+let currentAdmin = null;
+
+function adminLogin() {
+    const u = document.getElementById("adminUsername").value.trim();
+    const p = document.getElementById("adminPassword").value.trim();
+    const found = admins.find(a => a.username === u && a.password === p);
+    if (found) {
+        currentAdmin = found;
+        document.getElementById("adminLoginBox").style.display = "none";
+        document.getElementById("adminDashboard").style.display = "block";
+        renderAdminGamesTable();
+        renderInvoicesTable();
+        renderDiscountsTable();
+        renderAdminsTable();
+        updateRevenue();
+    } else {
+        document.getElementById("loginError").innerText = "نام کاربری یا رمز اشتباه است";
+    }
+}
+
+function adminLogout() {
+    currentAdmin = null;
+    document.getElementById("adminLoginBox").style.display = "block";
+    document.getElementById("adminDashboard").style.display = "none";
+}
+
+// --- مدیریت مودال‌ها (بدون هنگ) ---
+function cleanBackdrop() {
+    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+}
+
+function hideAndCleanModal(modalId) {
+    const modalEl = document.getElementById(modalId);
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) {
+        modal.hide();
+        modalEl.addEventListener('hidden.bs.modal', function handler() {
+            cleanBackdrop();
+            modalEl.removeEventListener('hidden.bs.modal', handler);
+        }, { once: true });
+    } else {
+        cleanBackdrop();
+    }
+}
+
+// --- بازی‌ها ---
+function renderAdminGamesTable() {
+    const tbody = document.getElementById("adminGamesTable");
+    tbody.innerHTML = "";
+    games.forEach(g => {
+        tbody.innerHTML += `
+            <tr>
+                <td><input type="checkbox" class="game-checkbox" value="${g.id}" onchange="toggleBulkDeleteBtn()"></td>
+                <td>${g.name}</td>
+                <td>${g.price.toLocaleString()}</td>
+                <td>
+                    <button class="btn btn-sm btn-warning" onclick="editGame(${g.id})"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteGame(${g.id})"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`;
+    });
+}
+
+function toggleSelectAll(cb) {
+    document.querySelectorAll('.game-checkbox').forEach(c => c.checked = cb.checked);
+    toggleBulkDeleteBtn();
+}
+
+function toggleBulkDeleteBtn() {
+    document.getElementById("bulkDeleteBtn").disabled = !document.querySelectorAll('.game-checkbox:checked').length;
+}
+
+function bulkDeleteGames() {
+    const ids = Array.from(document.querySelectorAll('.game-checkbox:checked')).map(cb => parseInt(cb.value));
+    if (!ids.length) return;
+    if (confirm(`${ids.length} بازی حذف شوند؟`)) {
+        games = games.filter(g => !ids.includes(g.id));
+        saveGames();
+        renderAdminGamesTable();
+        renderGames();
+    }
+}
+
+function exportGamesJSON() {
+    const blob = new Blob([JSON.stringify(games, null, 2)], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'pixelplus_games_backup.json';
+    a.click();
+}
+
+function importGamesJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (Array.isArray(data)) { games = data; saveGames(); renderAdminGamesTable(); renderGames(); alert("انجام شد"); }
+            else alert("فرمت نامعتبر");
+        } catch { alert("خطا"); }
+    };
+    reader.readAsText(file);
+}
+
+function showAddModal() {
+    cleanBackdrop();
+    document.getElementById("editGameId").value = "";
+    document.getElementById("gameName").value = "";
+    document.getElementById("gamePrice").value = "";
+    document.getElementById("gameImage").value = "";
+    document.getElementById("modalTitle").innerText = "بازی جدید";
+    new bootstrap.Modal(document.getElementById("gameModal")).show();
+}
+
+function editGame(id) {
+    const game = games.find(g => g.id === id);
+    if (!game) return;
+    cleanBackdrop();
+    document.getElementById("editGameId").value = game.id;
+    document.getElementById("gameName").value = game.name;
+    document.getElementById("gamePrice").value = game.price;
+    document.getElementById("gameImage").value = game.image || "";
+    document.getElementById("modalTitle").innerText = "ویرایش بازی";
+    new bootstrap.Modal(document.getElementById("gameModal")).show();
+}
+
+function saveGame() {
+    const id = document.getElementById("editGameId").value;
+    const name = document.getElementById("gameName").value.trim();
+    const price = parseInt(document.getElementById("gamePrice").value);
+    const image = document.getElementById("gameImage").value.trim();
+    if (!name || isNaN(price) || price <= 0) return alert("نام و قیمت معتبر وارد کنید");
+    if (id) {
+        const game = games.find(g => g.id == id);
+        if (game) { game.name = name; game.price = price; game.image = image; }
+    } else {
+        games.push({ id: Date.now(), name, price, image });
+    }
+    saveGames();
+    renderAdminGamesTable();
+    renderGames();
+    hideAndCleanModal("gameModal");
+}
+
+function deleteGame(id) {
+    if (confirm("حذف شود؟")) {
+        games = games.filter(g => g.id !== id);
+        saveGames();
+        renderAdminGamesTable();
+        renderGames();
+    }
+}
+
+// --- فاکتورها ---
+function renderInvoicesTable() {
+    const tbody = document.getElementById("invoicesTable");
+    tbody.innerHTML = "";
+    invoices.slice().reverse().forEach(inv => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${inv.trackingCode}</td>
+                <td>${inv.customer.firstName} ${inv.customer.lastName}</td>
+                <td>${inv.total.toLocaleString()}</td>
+                <td>
+                    <button class="btn btn-sm btn-warning" onclick="editInvoice(${inv.id})"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteInvoice(${inv.id})"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`;
+    });
+    updateRevenue();
+}
+
+function updateRevenue() {
+    document.getElementById("totalRevenue").innerText = invoices.reduce((s, inv) => s + inv.total, 0).toLocaleString();
+}
+
+function deleteInvoice(id) {
+    if (confirm("حذف شود؟")) { invoices = invoices.filter(inv => inv.id !== id); saveInvoices(); renderInvoicesTable(); }
+}
+
+function deleteAllInvoices() {
+    if (confirm("همه فاکتورها حذف شوند؟")) { invoices = []; saveInvoices(); renderInvoicesTable(); }
+}
+
+function exportInvoicesExcel() {
+    if (!invoices.length) return alert("فاکتوری نیست");
+    const data = invoices.map(inv => ({
+        "کد پیگیری": inv.trackingCode,
+        "مشتری": `${inv.customer.firstName} ${inv.customer.lastName}`,
+        "تلفن": inv.customer.phone,
+        "بازی‌ها": inv.games.map(g => g.name).join("، "),
+        "مبلغ کل": inv.total
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "فاکتورها");
+    XLSX.writeFile(wb, "فاکتورهای_پیکسل_پلاس.xlsx");
+}
+
+function printAllInvoices() {
+    if (!invoices.length) return alert("فاکتوری نیست");
+    let w = window.open('', '_blank');
+    w.document.write('<html dir="rtl"><head><title>چاپ فاکتورها</title><style>body{font-family:Tahoma;background:white;color:black;}.page{page-break-after:always;padding:20px;}</style></head><body>');
+    invoices.forEach(inv => {
+        w.document.write(`<div class="page"><h3>فاکتور - کد: ${inv.trackingCode}</h3>
+            <p>مشتری: ${inv.customer.firstName} ${inv.customer.lastName} | تلفن: ${inv.customer.phone}</p>
+            <table border="1" width="100%"><tr><th>بازی</th><th>قیمت</th></tr>
+            ${inv.games.map(g => `<tr><td>${g.name}</td><td>${g.price.toLocaleString()}</td></tr>`).join('')}
+            </table><p>مبلغ نهایی: ${inv.total.toLocaleString()} تومان</p></div>`);
+    });
+    w.document.write('</body></html>');
+    w.document.close();
+    w.print();
+}
+
+// --- ویرایش فاکتور ---
+function editInvoice(id) {
+    const inv = invoices.find(i => i.id === id);
+    if (!inv) return;
+    cleanBackdrop();
+    document.getElementById("editInvoiceId").value = inv.id;
+    document.getElementById("editInvFirstName").value = inv.customer.firstName;
+    document.getElementById("editInvLastName").value = inv.customer.lastName;
+    document.getElementById("editInvPhone").value = inv.customer.phone;
+    const container = document.getElementById("editGamesList");
+    container.innerHTML = "";
+    const selectedIds = inv.games.map(g => g.id);
+    games.forEach(game => {
+        container.innerHTML += `<div class="form-check">
+            <input class="form-check-input game-edit-check" type="checkbox" value="${game.id}" ${selectedIds.includes(game.id) ? 'checked' : ''}>
+            <label class="form-check-label">${game.name} - ${game.price.toLocaleString()} تومان</label>
+        </div>`;
+    });
+    updateEditTotal();
+    new bootstrap.Modal(document.getElementById("editInvoiceModal")).show();
+}
+
+function updateEditTotal() {
+    let total = 0;
+    document.querySelectorAll('#editGamesList .game-edit-check:checked').forEach(cb => {
+        const g = games.find(g => g.id == cb.value);
+        if (g) total += g.price;
+    });
+    document.getElementById("editTotalPrice").innerText = total.toLocaleString();
+}
+document.addEventListener('change', e => { if (e.target.classList.contains('game-edit-check')) updateEditTotal(); });
+
+function saveInvoiceEdit() {
+    const id = parseInt(document.getElementById("editInvoiceId").value);
+    const inv = invoices.find(i => i.id === id);
+    if (!inv) return;
+    inv.customer.firstName = document.getElementById("editInvFirstName").value.trim();
+    inv.customer.lastName = document.getElementById("editInvLastName").value.trim();
+    inv.customer.phone = document.getElementById("editInvPhone").value.trim();
+    const selected = Array.from(document.querySelectorAll('#editGamesList .game-edit-check:checked')).map(cb => {
+        const g = games.find(g => g.id == cb.value);
+        return { id: g.id, name: g.name, price: g.price };
+    });
+    inv.games = selected;
+    inv.total = selected.reduce((s, g) => s + g.price, 0);
+    saveInvoices();
+    renderInvoicesTable();
+    hideAndCleanModal("editInvoiceModal");
+}
+
+// --- تخفیف‌ها ---
+function renderDiscountsTable() {
+    const tbody = document.getElementById("discountsTable");
+    tbody.innerHTML = "";
+    discounts.forEach(d => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${d.code}</td>
+                <td>${d.percent}%</td>
+                <td>${d.maxUses === -1 ? 'نامحدود' : d.maxUses}</td>
+                <td>${d.currentUses}</td>
+                <td>${d.active ? '<span class="badge bg-success">فعال</span>' : '<span class="badge bg-secondary">غیرفعال</span>'}</td>
+                <td>
+                    <button class="btn btn-sm btn-info me-1" onclick="toggleDiscount(${d.id})"><i class="fas fa-power-off"></i></button>
+                    <button class="btn btn-sm btn-warning me-1" onclick="showDiscountModal(${d.id})"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteDiscount(${d.id})"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`;
+    });
+}
+
+function showDiscountModal(id) {
+    cleanBackdrop();
+    if (id) {
+        const d = discounts.find(x => x.id === id);
+        document.getElementById("editDiscountId").value = d.id;
+        document.getElementById("discountCodeInput").value = d.code;
+        document.getElementById("discountPercent").value = d.percent;
+        document.getElementById("discountMaxUses").value = d.maxUses === -1 ? '' : d.maxUses;
+        document.getElementById("discountModalTitle").innerText = "ویرایش کد تخفیف";
+    } else {
+        document.getElementById("editDiscountId").value = "";
+        document.getElementById("discountCodeInput").value = "";
+        document.getElementById("discountPercent").value = "";
+        document.getElementById("discountMaxUses").value = "";
+        document.getElementById("discountModalTitle").innerText = "کد تخفیف جدید";
+    }
+    new bootstrap.Modal(document.getElementById("discountModal")).show();
+}
+
+function saveDiscount() {
+    const id = document.getElementById("editDiscountId").value;
+    const code = document.getElementById("discountCodeInput").value.trim().toUpperCase();
+    const percent = parseInt(document.getElementById("discountPercent").value);
+    const maxUses = document.getElementById("discountMaxUses").value.trim() === '' ? -1 : parseInt(document.getElementById("discountMaxUses").value);
+    if (!code || isNaN(percent) || percent <= 0) return alert("مقادیر معتبر وارد کنید");
+    if (id) {
+        const d = discounts.find(x => x.id == id);
+        if (d) { d.code = code; d.percent = percent; d.maxUses = maxUses; }
+    } else {
+        discounts.push({ id: Date.now(), code, percent, maxUses, currentUses: 0, active: true });
+    }
+    saveDiscounts();
+    renderDiscountsTable();
+    hideAndCleanModal("discountModal");
+}
+
+function toggleDiscount(id) {
+    const d = discounts.find(x => x.id === id);
+    if (d) { d.active = !d.active; saveDiscounts(); renderDiscountsTable(); }
+}
+
+function deleteDiscount(id) {
+    if (confirm("حذف شود؟")) {
+        discounts = discounts.filter(d => d.id !== id);
+        saveDiscounts();
+        renderDiscountsTable();
+    }
+}
+
+// --- مدیران ---
+function renderAdminsTable() {
+    const tbody = document.getElementById("adminsTable");
+    tbody.innerHTML = "";
+    admins.forEach(a => {
+        tbody.innerHTML += `<tr><td>${a.username}</td><td><button class="btn btn-sm btn-danger" onclick="deleteAdmin('${a.username}')"><i class="fas fa-trash"></i></button></td></tr>`;
+    });
+}
+
+function showAdminModal(username) {
+    cleanBackdrop();
+    if (username) {
+        document.getElementById("editAdminUsername").value = username;
+        document.getElementById("adminUsernameInput").value = username;
+        document.getElementById("adminPasswordInput").value = "";
+        document.getElementById("adminModalTitle").innerText = "تغییر رمز مدیر";
+    } else {
+        document.getElementById("editAdminUsername").value = "";
+        document.getElementById("adminUsernameInput").value = "";
+        document.getElementById("adminPasswordInput").value = "";
+        document.getElementById("adminModalTitle").innerText = "افزودن مدیر";
+    }
+    new bootstrap.Modal(document.getElementById("adminModal")).show();
+}
+
+function saveAdmin() {
+    const editUsername = document.getElementById("editAdminUsername").value;
+    const username = document.getElementById("adminUsernameInput").value.trim();
+    const password = document.getElementById("adminPasswordInput").value.trim();
+    if (!username || !password) return alert("نام کاربری و رمز الزامی است");
+    if (editUsername) {
+        const admin = admins.find(a => a.username === editUsername);
+        if (admin) admin.password = password;
+    } else {
+        if (admins.find(a => a.username === username)) return alert("نام کاربری تکراری");
+        admins.push({ username, password });
+    }
+    saveAdmins();
+    renderAdminsTable();
+    hideAndCleanModal("adminModal");
+}
+
+function deleteAdmin(username) {
+    if (admins.length <= 1) return alert("حداقل یک مدیر باید وجود داشته باشد");
+    if (confirm(`مدیر ${username} حذف شود؟`)) {
+        admins = admins.filter(a => a.username !== username);
+        saveAdmins();
+        renderAdminsTable();
+    }
+}
+
+function showChangePassword() {
+    const newPass = prompt("رمز جدید:");
+    if (newPass && currentAdmin) {
+        const admin = admins.find(a => a.username === currentAdmin.username);
+        if (admin) admin.password = newPass;
+        saveAdmins();
+        alert("رمز تغییر کرد");
+    }
+}
+
+// راه‌اندازی اولیه
+renderGames();
+</script>
+</body>
+</html>
